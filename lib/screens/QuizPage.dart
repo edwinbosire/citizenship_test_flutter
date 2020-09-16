@@ -76,52 +76,7 @@ class _QuizPageState extends State<QuizPage> {
     return widget.examViewModel.quizCompleted()
         ? ResultsPage(viewModel: widget.examViewModel)
         : Scaffold(
-            appBar: AppBar(
-              leading: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Center(
-                  child: FaIcon(
-                    FontAwesomeIcons.times,
-                    size: 22,
-                  ),
-                ),
-              ),
-              title: Center(
-                child: Text(
-                  "24:00",
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              actions: [
-                Row(
-                  children: <Widget>[
-                    NavigationBarButtonItem(
-                      selected: widget.examViewModel.isFavourite,
-                      normalStateIcon: FontAwesomeIcons.star,
-                      selectedStateIcon: FontAwesomeIcons.solidStar,
-                      onTap: () {
-                        setState(() {
-                          widget.examViewModel.toggleCurrentQuestionFavourite();
-                        });
-                      },
-                    ),
-                    NavigationBarButtonItem(
-                      selected: widget.examViewModel.showHint,
-                      normalStateIcon: FontAwesomeIcons.lightbulb,
-                      selectedStateIcon: FontAwesomeIcons.solidLightbulb,
-                      onTap: () {
-                        setState(() {
-                          widget.examViewModel.toggleCurrentQuestionHint();
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            appBar: _buildAppBar(context),
             backgroundColor: Colors.grey[200],
             body: PageView.builder(
               itemCount: attemptedQuestions.length,
@@ -141,6 +96,59 @@ class _QuizPageState extends State<QuizPage> {
             ),
           );
   }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Center(
+          child: FaIcon(
+            FontAwesomeIcons.times,
+            size: 22,
+          ),
+        ),
+      ),
+      title: Center(
+        child: Text(
+          "24:00",
+          style: TextStyle(fontWeight: FontWeight.w800),
+          textAlign: TextAlign.center,
+        ),
+      ),
+      actions: [
+        _buildNavigationBarActionButtons(viewModel: widget.examViewModel),
+      ],
+    );
+  }
+
+  Row _buildNavigationBarActionButtons({ExamViewModel viewModel}) {
+    return Row(
+      children: <Widget>[
+        NavigationBarButtonItem(
+          selected: viewModel.isFavourite,
+          normalStateIcon: FontAwesomeIcons.star,
+          selectedStateIcon: FontAwesomeIcons.solidStar,
+          onTap: () {
+            setState(() {
+              viewModel.toggleCurrentQuestionFavourite();
+            });
+          },
+        ),
+        NavigationBarButtonItem(
+          selected: viewModel.showHint,
+          normalStateIcon: FontAwesomeIcons.lightbulb,
+          selectedStateIcon: FontAwesomeIcons.solidLightbulb,
+          onTap: () {
+            setState(() {
+              viewModel.toggleCurrentQuestionHint();
+            });
+          },
+        ),
+      ],
+    );
+  }
 }
 
 class QuizCard extends StatelessWidget {
@@ -151,8 +159,15 @@ class QuizCard extends StatelessWidget {
   final bool showHint;
   final Function onOptionSelection;
 
-  const QuizCard({Key key, this.scrollController, this.totalNumberOfQuestions, this.questionViewModel, this.pageIndex, this.showHint, this.onOptionSelection})
-      : super(key: key);
+  const QuizCard({
+    Key key,
+    this.scrollController,
+    this.totalNumberOfQuestions,
+    this.questionViewModel,
+    this.pageIndex,
+    this.showHint,
+    this.onOptionSelection,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
