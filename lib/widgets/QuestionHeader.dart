@@ -20,11 +20,10 @@ class QuestionHeader extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
             child: Text(
               'Question $index of $totalQuestions',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
             ),
             decoration: BoxDecoration(
-              color: Colors.blue[800],
+              color: Colors.blue[700],
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(20),
             ),

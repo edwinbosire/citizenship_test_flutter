@@ -17,12 +17,14 @@ class ResultsPage extends StatefulWidget {
 class _ResultsPageState extends State<ResultsPage> {
   @override
   Widget build(BuildContext context) {
+    ExamViewModel _viewModel = widget.viewModel;
+
     return Scaffold(
       backgroundColor: Colors.blue[700],
       body: CustomScrollView(
         slivers: <Widget>[
           _buildSliverAppBar(),
-          _buildQuestionSheetList(viewModels: widget.viewModel.questionsViewModels),
+          _buildQuestionSheetList(viewModels: _viewModel.questionsViewModels),
           SliverPadding(
             padding: EdgeInsets.only(bottom: 50.0),
           )
@@ -46,7 +48,9 @@ class _ResultsPageState extends State<ResultsPage> {
         actions: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: _redoButton(onTap: () => print('redo')),
+            child: _redoButton(onTap: () {
+              widget.viewModel.resetExam();
+            }),
           ),
         ],
         flexibleSpace: FlexibleSpaceBar(

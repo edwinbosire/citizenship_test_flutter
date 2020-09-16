@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:life_in_the_uk/screens/QuizPage.dart';
+import 'package:life_in_the_uk/viewModel/exam_view_model.dart';
 import 'package:life_in_the_uk/widgets/HeaderView.dart';
 import 'package:life_in_the_uk/widgets/MenuListTitle.dart';
+import 'package:provider/provider.dart';
 import 'package:stretchy_header/stretchy_header.dart';
 
 import 'utilities/constants.dart';
@@ -43,7 +45,10 @@ class HomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return QuizPage();
+                  return ChangeNotifierProvider(
+                    create: (_) => ExamViewModel.initWithTestData(),
+                    child: QuizPage(),
+                  );
                 }),
               );
             },

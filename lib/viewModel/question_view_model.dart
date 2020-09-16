@@ -10,6 +10,10 @@ class QuestionViewModel {
 
   QuestionViewModel(this.question);
 
+  QuestionStatus get questionStatus {
+    return question.status;
+  }
+
   void toggleFavourite() {
     isFavourite = !isFavourite;
   }
@@ -17,6 +21,13 @@ class QuestionViewModel {
   void toggleHint() {
     showHint = !showHint;
     print('hint toggled');
+  }
+
+  void reset() {
+    selectedAnswers = Set();
+    showHint = false;
+    isFavourite = false;
+    question.resetStatus();
   }
 
   // update state when an option is selected
@@ -46,9 +57,6 @@ class QuestionViewModel {
     question.status = QuestionStatus.attempted;
 
     if (question.answers.contains(index)) {
-      print('correct answer selected');
-      question.options[index].updateStatus = OptionStatus.correct;
-
       if (question.answers.length > selectedAnswers.length) {
         question.status = QuestionStatus.incomplete;
       } else if (question.answers.length == selectedAnswers.length) {
@@ -57,13 +65,13 @@ class QuestionViewModel {
       }
     } else {
       print('in-correct answer selected');
+      question.status = QuestionStatus.incorrect;
       question.options[index].updateStatus = OptionStatus.incorrect;
 
       for (int anAnswer in question.answers) {
         if (!selectedAnswers.contains(anAnswer)) {
           question.options[anAnswer].updateStatus = OptionStatus.correct;
         }
-        print('auto setting up correct answer ${question.options[anAnswer].title}');
       }
     }
   }

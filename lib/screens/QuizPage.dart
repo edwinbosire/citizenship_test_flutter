@@ -2,21 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:life_in_the_uk/utilities/Data.dart';
+import 'package:life_in_the_uk/models/Question.dart';
 import 'package:life_in_the_uk/viewModel/exam_view_model.dart';
 import 'package:life_in_the_uk/viewModel/question_view_model.dart';
 import 'package:life_in_the_uk/widgets/ExplanationTile.dart';
 import 'package:life_in_the_uk/widgets/NavigationBarButton.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/OptionListTile.dart';
 import '../widgets/QuestionHeader.dart';
 import 'ResultsPage.dart';
 
 class QuizPage extends StatefulWidget {
-  final ExamViewModel examViewModel = ExamViewModel(questions.map((e) => QuestionViewModel(e)).toList());
-
-//  const QuizPage({Key key, this.examViewModel}) : super(key: key);
-
   @override
   _QuizPageState createState() => _QuizPageState();
 }
@@ -24,15 +21,12 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   PageController _pageController;
   ScrollController _scrollController;
-  List<QuestionViewModel> attemptedQuestions = [];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
     _scrollController = ScrollController();
-    QuestionViewModel questionViewModel = widget.examViewModel.getCurrentQuestion();
-    attemptedQuestions.add(questionViewModel);
   }
 
   @override
@@ -43,62 +37,59 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _scrollToBottom() {
-    _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
   }
 
-  void _scrollToNextPage(int currentIndex, QuestionViewModel currentQuestionViewModel) {
-    setState(() {
-      currentQuestionViewModel.updateOptionStateAtIndex(currentIndex);
-      QuestionViewModel nextQuestionViewModel = widget.examViewModel.getNextQuestion();
-
-      if (nextQuestionViewModel != null && !attemptedQuestions.contains(nextQuestionViewModel)) {
-        attemptedQuestions.add(nextQuestionViewModel);
-
-        if (_pageController.hasClients && currentQuestionViewModel.answeredCorrectly()) {
-          Timer(Duration(seconds: 1), () {
-            _pageController.animateToPage(
-              widget.examViewModel.currentQuestionIndex,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut,
-            );
-          });
-        } else {
-          // if incorrect, don't navigate to next page, show hint instead
-          currentQuestionViewModel.showHint = true;
-          _scrollToBottom();
-        }
-      }
-    });
+  void _scrollToNextPage(ExamViewModel exam, int selection, QuestionViewModel currentQuestionViewModel) {
+    QuestionStatus status = exam.updateCurrentQuestionWithSelection(selection);
+    print('questions selected: status == $status');
+    if (_pageController.hasClients && status == QuestionStatus.correct && !exam.quizCompleted()) {
+      print('advance to next question');
+      Timer(Duration(seconds: 1), () {
+        _pageController.animateToPage(
+          exam.currentQuestionIndex,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      });
+    } else if (status == QuestionStatus.incorrect) {
+      print('question incorrect, don\'t navigate to next page, show hint instead');
+      currentQuestionViewModel.showHint = true;
+      _scrollToBottom();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.examViewModel.quizCompleted()
-        ? ResultsPage(viewModel: widget.examViewModel)
-        : Scaffold(
-            appBar: _buildAppBar(context),
-            backgroundColor: Colors.grey[200],
-            body: PageView.builder(
-              itemCount: attemptedQuestions.length,
-              physics: BouncingScrollPhysics(),
-              controller: _pageController,
-              itemBuilder: (BuildContext context, int pageIndex) {
-                QuestionViewModel questionVM = attemptedQuestions[pageIndex];
-                return QuizCard(
-                  scrollController: _scrollController,
-                  totalNumberOfQuestions: widget.examViewModel.totalQuestions,
-                  questionViewModel: questionVM,
-                  pageIndex: pageIndex,
-                  showHint: widget.examViewModel.showHint,
-                  onOptionSelection: (ndx, q) => _scrollToNextPage(ndx, q),
-                );
-              },
-            ),
-          );
+    return Consumer<ExamViewModel>(builder: (context, viewModel, child) {
+      return viewModel.quizCompleted()
+          ? ResultsPage(viewModel: viewModel)
+          : Scaffold(
+              appBar: _buildAppBar(context),
+              backgroundColor: Colors.grey[200],
+              body: PageView.builder(
+                itemCount: viewModel.attemptedQuestions.length,
+                physics: ClampingScrollPhysics(),
+                controller: _pageController,
+                itemBuilder: (BuildContext context, int pageIndex) {
+                  QuestionViewModel questionVM = viewModel.attemptedQuestions[pageIndex];
+                  return QuizCard(
+                    scrollController: _scrollController,
+                    totalNumberOfQuestions: viewModel.totalQuestions,
+                    questionViewModel: questionVM,
+                    pageIndex: pageIndex,
+                    showHint: viewModel.showHint,
+                    onOptionSelection: (ndx, q) => _scrollToNextPage(viewModel, ndx, q),
+                  );
+                },
+              ),
+            );
+    });
   }
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
+      backgroundColor: Colors.blue[700],
       leading: GestureDetector(
         onTap: () {
           Navigator.pop(context);
@@ -118,12 +109,14 @@ class _QuizPageState extends State<QuizPage> {
         ),
       ),
       actions: [
-        _buildNavigationBarActionButtons(viewModel: widget.examViewModel),
+        _buildNavigationBarActionButtons(),
       ],
     );
   }
 
-  Row _buildNavigationBarActionButtons({ExamViewModel viewModel}) {
+  Row _buildNavigationBarActionButtons() {
+    ExamViewModel viewModel = context.read<ExamViewModel>();
+
     return Row(
       children: <Widget>[
         NavigationBarButtonItem(
