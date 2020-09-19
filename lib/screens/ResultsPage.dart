@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:life_in_the_uk/models/Option.dart';
-import 'package:life_in_the_uk/models/OptionStatus.dart';
+import 'package:life_in_the_uk/models/Question.dart';
 import 'package:life_in_the_uk/viewModel/exam_view_model.dart';
 import 'package:life_in_the_uk/viewModel/question_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
-class ResultsPage extends StatefulWidget {
-  final ExamViewModel viewModel;
+const Color kDefaultBlue = Color(0xFF1976D2);
 
-  const ResultsPage({Key key, this.viewModel}) : super(key: key);
-  @override
-  _ResultsPageState createState() => _ResultsPageState();
-}
-
-class _ResultsPageState extends State<ResultsPage> {
+class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ExamViewModel _viewModel = widget.viewModel;
+    ExamViewModel viewModel = context.watch<ExamViewModel>();
 
     return Scaffold(
-      backgroundColor: Colors.blue[700],
+      backgroundColor: kDefaultBlue,
       body: CustomScrollView(
         slivers: <Widget>[
-          _buildSliverAppBar(),
-          _buildQuestionSheetList(viewModels: _viewModel.questionsViewModels),
+          _buildSliverAppBar(context, viewModel),
+          _buildQuestionSheetList(viewModels: viewModel.questionsViewModels),
           SliverPadding(
             padding: EdgeInsets.only(bottom: 50.0),
           )
@@ -33,9 +28,9 @@ class _ResultsPageState extends State<ResultsPage> {
     );
   }
 
-  SliverAppBar _buildSliverAppBar() => SliverAppBar(
+  SliverAppBar _buildSliverAppBar(BuildContext context, ExamViewModel viewModel) => SliverAppBar(
         excludeHeaderSemantics: false,
-        backgroundColor: Colors.blue[700],
+        backgroundColor: kDefaultBlue,
         centerTitle: false,
         pinned: true,
         floating: true,
@@ -43,20 +38,23 @@ class _ResultsPageState extends State<ResultsPage> {
         title: null,
         leading: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: _closeButton(onTap: () => Navigator.pop(context)),
+          child: _closeButton(onTap: () {
+            viewModel.resetExam();
+            Navigator.pop(context);
+          }),
         ),
         actions: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: _redoButton(onTap: () {
-              widget.viewModel.resetExam();
+              viewModel.resetExam();
             }),
           ),
         ],
         flexibleSpace: FlexibleSpaceBar(
           collapseMode: CollapseMode.parallax,
           background: ResultsHeader(
-            viewModel: widget.viewModel,
+            viewModel: viewModel,
           ),
         ),
       );
@@ -88,15 +86,23 @@ class _ResultsPageState extends State<ResultsPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text(
                           questionVM.title,
-                          style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                          style: TextStyle(color: Colors.grey, fontSize: 18.0),
                         ),
                       ),
-                      ..._buildOptionsList(questionVM.options),
+                      ..._buildOptionsList(questionVM),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        child: Text(
+                          questionVM.hint,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -107,30 +113,60 @@ class _ResultsPageState extends State<ResultsPage> {
     );
   }
 
-  Iterable<Widget> _buildOptionsList(List<Option> options) {
+  Iterable<Widget> _buildOptionsList(QuestionViewModel viewModel) {
+    List<Option> options = viewModel.options;
+
+    if (viewModel.questionStatus == QuestionStatus.correct) {
+    } else if (viewModel.questionStatus == QuestionStatus.correct) {}
+
+    int index = -1;
     return options.map(
       (option) {
+        index++;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(
             children: [
-              Icon(
-                Icons.check,
-                size: 14.0,
-                color: Colors.lightGreen,
-              ),
               SizedBox(
-                width: 5.0,
+                width: 11,
+                child: _buildCheckMark(viewModel, index),
               ),
-              Text(
-                option.title,
-                style: TextStyle(color: option.status == OptionStatus.correct ? Colors.blue : Colors.grey),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  option.title,
+                  style: _buildTextStyle(viewModel, index),
+                ),
               ),
             ],
           ),
         );
       },
     );
+  }
+
+  Widget _buildCheckMark(QuestionViewModel viewModel, int index) {
+    if (viewModel.answers.contains(index) && viewModel.selectedAnswers.contains(index)) {
+      return FaIcon(FontAwesomeIcons.check, size: 13.0, color: Colors.lightGreen);
+    } else if (!viewModel.answers.contains(index) && viewModel.selectedAnswers.contains(index)) {
+      return FaIcon(FontAwesomeIcons.times, size: 15.0, color: Colors.red);
+    } else if (viewModel.answers.contains(index)) {
+      return FaIcon(FontAwesomeIcons.check, size: 13.0, color: Colors.blue);
+    } else {
+      return FaIcon(FontAwesomeIcons.times, size: 15.0, color: Colors.grey);
+    }
+  }
+
+  TextStyle _buildTextStyle(QuestionViewModel viewModel, int index) {
+    if (viewModel.answers.contains(index) && viewModel.selectedAnswers.contains(index)) {
+      return TextStyle(color: Colors.green);
+    } else if (!viewModel.answers.contains(index) && viewModel.selectedAnswers.contains(index)) {
+      return TextStyle(color: Colors.red);
+    } else if (viewModel.answers.contains(index)) {
+      return TextStyle(color: Colors.blue);
+    } else {
+      return TextStyle(color: Colors.grey);
+    }
   }
 }
 
@@ -152,7 +188,7 @@ class ResultsHeader extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.blue[700],
+                  color: kDefaultBlue,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                     bottomRight: Radius.circular(50),
@@ -188,7 +224,7 @@ class ResultsHeader extends StatelessWidget {
                   footer: Column(
                     children: [
                       Text(
-                        "You have failed this quiz",
+                        viewModel.resultPageDecision(),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
@@ -196,7 +232,7 @@ class ResultsHeader extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'The pass mark required is 75%',
+                        viewModel.resultExplanation(),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.orange[800],

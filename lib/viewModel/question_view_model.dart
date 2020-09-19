@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:life_in_the_uk/models/OptionStatus.dart';
 import 'package:life_in_the_uk/models/Question.dart';
 
-class QuestionViewModel {
+class QuestionViewModel with ChangeNotifier {
   final Question question;
   var selectedAnswers = Set();
-  bool showHint = false;
+  bool _showHint = false;
   bool isFavourite = false;
 
   QuestionViewModel(this.question);
@@ -14,13 +14,27 @@ class QuestionViewModel {
     return question.status;
   }
 
+  // checks if this question has been fully answered
+  bool get isAnswered => (question.status == QuestionStatus.incorrect || question.status == QuestionStatus.correct);
+
   void toggleFavourite() {
     isFavourite = !isFavourite;
+
+    notifyListeners();
+  }
+
+  // ignore: unnecessary_getters_setters
+  bool get showHint => _showHint;
+
+  // ignore: unnecessary_getters_setters
+  set showHint(bool show) {
+    _showHint = show;
+    notifyListeners();
   }
 
   void toggleHint() {
-    showHint = !showHint;
-    print('hint toggled');
+    _showHint = !_showHint;
+    notifyListeners();
   }
 
   void reset() {
@@ -61,10 +75,8 @@ class QuestionViewModel {
         question.status = QuestionStatus.incomplete;
       } else if (question.answers.length == selectedAnswers.length) {
         question.status = QuestionStatus.correct;
-        print('all questions answered correctly');
       }
     } else {
-      print('in-correct answer selected');
       question.status = QuestionStatus.incorrect;
       question.options[index].updateStatus = OptionStatus.incorrect;
 

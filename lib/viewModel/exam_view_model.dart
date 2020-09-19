@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:life_in_the_uk/models/Question.dart';
 import 'package:life_in_the_uk/utilities/Data.dart';
@@ -6,6 +8,8 @@ import 'package:life_in_the_uk/viewModel/question_view_model.dart';
 class ExamViewModel with ChangeNotifier {
   final List<QuestionViewModel> questionsViewModels;
   List<QuestionViewModel> attemptedQuestions = [];
+  bool quizCompleted = false;
+  int pageInFocus = 0;
 
   ExamViewModel(this.questionsViewModels) {
     this.attemptedQuestions.add(questionsViewModels[0]);
@@ -21,43 +25,43 @@ class ExamViewModel with ChangeNotifier {
     return questionsViewModels.length;
   }
 
+  int get totalAttemptedQuestions => attemptedQuestions.length;
+
   int get currentQuestionIndex {
     return _currentQuestion;
   }
 
+  set focus(int newValue) {
+    pageInFocus = newValue;
+    notifyListeners();
+  }
+
   bool get showHint {
-    return getCurrentQuestion().showHint;
+    return questionsViewModels[pageInFocus].showHint;
   }
 
   bool get isFavourite {
-    return getCurrentQuestion().isFavourite;
-  }
-
-  void toggleCurrentQuestionFavourite() {
-    getCurrentQuestion().toggleFavourite();
+    return questionsViewModels[pageInFocus].isFavourite;
   }
 
   void toggleCurrentQuestionHint() {
-    getCurrentQuestion().toggleHint();
+    questionsViewModels[pageInFocus].toggleHint();
+    notifyListeners();
+  }
+
+  void toggleCurrentQuestionFavourite() {
+    questionsViewModels[pageInFocus].toggleFavourite();
+    notifyListeners();
   }
 
   QuestionViewModel getCurrentQuestion() {
     return questionsViewModels[_currentQuestion];
   }
 
-  bool quizCompleted() {
-    bool incomplete = questionsViewModels
-            .where((viewModel) => (viewModel.question.status == QuestionStatus.incomplete || viewModel.question.status == QuestionStatus.notAttempted))
-            .length >
-        0;
-    return !incomplete;
-  }
-
   // returns the next question
   QuestionViewModel getNextQuestion() {
     QuestionViewModel currentQuestionVM = getCurrentQuestion();
     if (_currentQuestion < questionsViewModels.length - 1 && !currentQuestionVM.shouldAllowSelection()) {
-      print('next question requested');
       _currentQuestion++;
       return questionsViewModels[_currentQuestion];
     } else {
@@ -75,6 +79,9 @@ class ExamViewModel with ChangeNotifier {
     return correct / questionsViewModels.length;
   }
 
+  String resultPageDecision() => (score < 0.75) ? 'You have failed this quiz' : 'You have passed this quiz';
+  String resultExplanation() => score < 0.75 ? 'The pass mrk required is 75%' : '';
+
   QuestionStatus updateCurrentQuestionWithSelection(int selection) {
     getCurrentQuestion().updateOptionStateAtIndex(selection);
     QuestionStatus currentStatus = getCurrentQuestion().questionStatus;
@@ -82,10 +89,20 @@ class ExamViewModel with ChangeNotifier {
 
     _appendAttemptedQuestions(nextQuestionViewModel);
 
-    notifyListeners();
+    if (getCurrentQuestion().isAnswered == true && _isLastQuestion()) {
+      Timer(Duration(seconds: 3), () {
+        quizCompleted = true;
+        notifyListeners();
+      });
+    } else {
+      quizCompleted = false;
+      notifyListeners();
+    }
 
     return currentStatus;
   }
+
+  bool _isLastQuestion() => _currentQuestion == questionsViewModels.length - 1;
 
   void _appendAttemptedQuestions(QuestionViewModel viewModel) {
     if (viewModel != null && !attemptedQuestions.contains(viewModel)) {
@@ -99,7 +116,7 @@ class ExamViewModel with ChangeNotifier {
   }
 
   void resetExam() {
-    print('reset exam called');
+    quizCompleted = false;
     _currentQuestion = 0;
     attemptedQuestions = [questionsViewModels[0]];
 
