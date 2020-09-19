@@ -29,7 +29,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
   font_awesome_flutter: ^8.4.0
-  stretchy_header: '^1.0.8'
   percent_indicator: '^2.1.6'
   provider: ^4.3.2+2
 
