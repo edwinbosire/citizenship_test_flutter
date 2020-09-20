@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:life_in_the_uk/screens/QuizPage.dart';
+import 'package:life_in_the_uk/screens/exam_tips_page.dart';
+import 'package:life_in_the_uk/screens/practice_questions.dart';
+import 'package:life_in_the_uk/screens/revision_page.dart';
 import 'package:life_in_the_uk/utilities/constants.dart';
 import 'package:life_in_the_uk/viewModel/exam_view_model.dart';
 import 'package:provider/provider.dart';
@@ -42,19 +45,34 @@ class MenuPage extends StatelessWidget {
                   subTitle: '24 Practise questions to prepare you for the test',
                 ),
                 MenuListTile(
-                  onPress: () {},
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PracticeQuestions()),
+                    );
+                  },
                   iconName: 'Practice',
                   title: 'Practice Questions',
                   subTitle: '1,000+ Questions to practice',
                 ),
                 MenuListTile(
-                  onPress: () {},
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Revision()),
+                    );
+                  },
                   iconName: 'Revision',
                   title: 'Revision',
                   subTitle: 'All the reading material needed for the test',
                 ),
                 MenuListTile(
-                  onPress: () {},
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ExamTipsPage()),
+                    );
+                  },
                   iconName: 'Tips',
                   title: 'Tips to pass the test',
                   subTitle: 'Helpful tips to help you pass the exam',
