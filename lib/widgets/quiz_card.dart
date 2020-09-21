@@ -28,8 +28,6 @@ class QuizCard extends StatefulWidget {
 
 class _QuizCardState extends State<QuizCard> {
   ScrollController _scrollController;
-  static final sinePeriod = 2 * pi;
-  double _endValue = 0;
   bool shouldScrollToTop = false;
 
   @override
@@ -72,9 +70,9 @@ class _QuizCardState extends State<QuizCard> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(height: 100),
+//                          SizedBox(height: 100),
                           QuestionHeader(),
-                          SizedBox(height: 120),
+//                          SizedBox(height: 120),
                         ],
                       ),
                     );

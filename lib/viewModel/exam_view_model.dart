@@ -82,6 +82,8 @@ class ExamViewModel with ChangeNotifier {
   String resultPageDecision() => (score < 0.75) ? 'You have failed this quiz' : 'You have passed this quiz';
   String resultExplanation() => score < 0.75 ? 'The pass mrk required is 75%' : '';
 
+  String get prompt => (getCurrentQuestion().answers.length == 2) ? 'Please choose TWO answers' : 'Please choose ONE answer';
+
   QuestionStatus updateCurrentQuestionWithSelection(int selection) {
     getCurrentQuestion().updateOptionStateAtIndex(selection);
     QuestionStatus currentStatus = getCurrentQuestion().questionStatus;
