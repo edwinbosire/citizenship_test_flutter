@@ -6,14 +6,14 @@ This app is an exam preparation aid for this test. It has been implemented in fl
 
 ![ios app banner](https://github.com/edwinbosire/citizenship_test_flutter/blob/main/github_resources/ios_app_anner.png?raw=true)
 
-I've done this before, I've written this app before in React-Native [read about it here](https://medium.com/@edwinbosire/an-app-in-24-hours-my-react-native-experience-dda6cbc5da7). I've also written it in Objective-c and Swift, but here we are again
+I've been here before, I once wrote this app in a weekend using React-Native [read about it here](https://medium.com/@edwinbosire/an-app-in-24-hours-my-react-native-experience-dda6cbc5da7). I've also written it in Objective-c and Swift, but here we are again, maybe this time i will actually finish it.
 
 ### Attack plan
 1. Start a quiz and complete and attempt all questions
 - [x] scroll back to answered questions and not go forward
 - [x] scroll to the next question automatically when the current one is answered correctly
 - [x] show hint for a questions once you've answered it incorrectly
-- [ ] if a user requests for the hint and no answeres selected, mark the question as wrong, then display the hint
+- [ ] ~if a user requests for the hint and no answeres selected, mark the question as wrong, then display the hint~
 - [ ] allow the user to save a question in favourites
 - [x] stop users from amending previous questions
 
@@ -24,22 +24,25 @@ I've done this before, I've written this app before in React-Native [read about 
 3. Allow users to see a list of possible quizes, if a quiz has been attemted, show the score
 
 *** We need a way to persist data, we can use UserPreferences for now, or upgrade to SQLite database ***
+- [ ] Read and parse JSON file containing ~2,000 questions
+- [ ] Create 31 unique tests that the user can take
+- [ ] Each question to have reference to the reading material, this would help with revealing the hit
 
-4. Allow user to read the revision material (Book)
+4. Allow users to read the revision material (Book)
 - [ ] table of content with progress bar
 - [ ] allow user to dive deeper into the content of the book
 - [ ] track reading progress
 
 
 Nice to have:
-- Have questions per book section
+- Have ability to categorise questions per book chapter
 - Show scores per book section, this could help the user focus on a particular topic
 - Flash card with notes derived from the book.
 
 Technicals
 
-- [x] move all relevant state from the model objects to ExamViewModel and QuestionViewModel, this will allow us to reset an exam
-- [x] employ the use of Provider package to accomplish the above.
+- [x] Move all relevant state from the model objects to ExamViewModel and QuestionViewModel, this will allow us to reset an exam
+- [x] Employ the use of Provider package to accomplish the above.
 
 ## Getting Started
 
