@@ -6,6 +6,8 @@ This app is an exam preparation aid for this test. It has been implemented in fl
 
 ![ios app banner](https://github.com/edwinbosire/citizenship_test_flutter/blob/main/github_resources/ios_app_anner.png?raw=true)
 
+I've done this before, I've written this app before in React-Native [read about it here](https://medium.com/@edwinbosire/an-app-in-24-hours-my-react-native-experience-dda6cbc5da7). I've also written it in Objective-c and Swift, but here we are again
+
 ### Attack plan
 1. Start a quiz and complete and attempt all questions
 - [x] scroll back to answered questions and not go forward
