@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:life_in_the_uk/models/Question.dart';
 import 'package:life_in_the_uk/utilities/Data.dart';
+import 'package:life_in_the_uk/utilities/constants.dart';
 import 'package:life_in_the_uk/viewModel/question_view_model.dart';
 
 class ExamViewModel with ChangeNotifier {
@@ -17,6 +18,12 @@ class ExamViewModel with ChangeNotifier {
 
   static ExamViewModel initWithTestData() {
     return ExamViewModel(questions.map((e) => QuestionViewModel(e)).toList());
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   int _currentQuestion = 0;
@@ -127,5 +134,34 @@ class ExamViewModel with ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Timer _timer;
+
+  Duration _examDuration = Duration(minutes: kDefaultExamDuration);
+  get examDuration => format(_examDuration);
+  set examDuration(Duration newValue) {
+    _examDuration = newValue;
+    notifyListeners();
+  }
+
+  // Formats a duration to MM:SS
+  format(Duration d) => d.toString().substring(2, 7);
+
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) {
+//        _examDuration -= Duration(seconds: 1);
+        if (_examDuration.inSeconds < 0) {
+          timer.cancel();
+          print('Exam time is up! ');
+          notifyListeners();
+        } else {
+          examDuration = _examDuration - Duration(seconds: 1);
+        }
+      },
+    );
   }
 }

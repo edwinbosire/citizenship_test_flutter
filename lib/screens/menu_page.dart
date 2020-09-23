@@ -7,8 +7,8 @@ import 'package:life_in_the_uk/utilities/constants.dart';
 import 'package:life_in_the_uk/viewModel/exam_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'HeaderView.dart';
-import 'MenuListTitle.dart';
+import '../widgets/HeaderView.dart';
+import '../widgets/MenuListTitle.dart';
 
 class MenuPage extends StatelessWidget {
   final String title;

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,6 +22,7 @@ class _QuizPageState extends State<QuizPage> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    Provider.of<ExamViewModel>(context, listen: false).startTimer();
   }
 
   @override
@@ -86,8 +88,14 @@ class _QuizPageState extends State<QuizPage> {
       ),
       title: Center(
         child: Text(
-          "24:00",
-          style: TextStyle(fontWeight: FontWeight.w800),
+          '${context.watch<ExamViewModel>().examDuration}',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontFeatures: [
+              FontFeature.slashedZero(),
+              FontFeature.tabularFigures(),
+            ],
+          ),
           textAlign: TextAlign.center,
         ),
       ),

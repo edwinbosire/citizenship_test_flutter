@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:life_in_the_uk/widgets/menu_page.dart';
+import 'package:life_in_the_uk/screens/menu_page.dart';
 
 void main() => runApp(MyApp());
 
