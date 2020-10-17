@@ -70,9 +70,7 @@ class _QuizCardState extends State<QuizCard> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-//                          SizedBox(height: 100),
                           QuestionHeader(),
-//                          SizedBox(height: 120),
                         ],
                       ),
                     );

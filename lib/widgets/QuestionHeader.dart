@@ -28,7 +28,7 @@ class QuestionHeader extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                     child: Text(
                       'Question $index of $totalQuestions',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                      style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white),
                     ),
                     decoration: BoxDecoration(
                       color: Colors.blue[700],
@@ -42,18 +42,17 @@ class QuestionHeader extends StatelessWidget {
                   child: Container(
                     child: Text(
                       question.title,
-                      style: TextStyle(color: Colors.blueGrey[800], fontSize: 34.0),
+                      style: Theme.of(context).textTheme.headline3,
                     ),
                   ),
                 ),
                 Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(exam.prompt,
-                      style: TextStyle(
-                        color: Colors.blueGrey[800].withOpacity(0.5),
-                        fontSize: 14.0,
-                      )),
+                  child: Text(
+                    exam.prompt,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ),
               ],
             ),
