@@ -20,24 +20,15 @@ class HeaderView extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     'Life in the UK',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 34),
+                    style: Theme.of(context).textTheme.headline3.copyWith(color: Colors.white),
                   ),
                   Text(
                     'TEST',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 30),
+                    style: Theme.of(context).textTheme.headline4.copyWith(color: Colors.white),
                   ),
                   Text(
                     '3rd Edition',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w100,
-                        fontSize: 21),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w100, fontSize: 21),
                   ),
                 ],
               ),

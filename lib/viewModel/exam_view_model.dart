@@ -153,7 +153,6 @@ class ExamViewModel with ChangeNotifier {
     _timer = new Timer.periodic(
       oneSec,
       (Timer timer) {
-//        _examDuration -= Duration(seconds: 1);
         if (_examDuration.inSeconds < 0) {
           timer.cancel();
           print('Exam time is up! ');

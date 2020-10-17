@@ -22,20 +22,15 @@ class MenuListTile extends StatelessWidget {
       child: InkWell(
         onTap: onPress,
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(vertical: kMenuItemVerticalPadding),
+          padding: const EdgeInsets.symmetric(vertical: kMenuItemVerticalPadding),
           child: ListTile(
             leading: Image(
               image: AssetImage('images/$iconName.png'),
             ),
-            title: Text(
-              title,
-              style: TextStyle(
-                  fontWeight: FontWeight.w500, color: Colors.blueGrey[800]),
-            ),
+            title: Text(title, style: Theme.of(context).textTheme.headline5),
             subtitle: Text(
               subTitle,
-              style: TextStyle(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey[600]),
             ),
           ),
         ),
