@@ -19,11 +19,11 @@ class ExplanationTile extends StatelessWidget {
               child: RichText(
                 text: TextSpan(
                   text: '⬇ Explanation \n \n',
-                  style: TextStyle(color: Colors.blue[800], fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.button.copyWith(color: Colors.blue[700]),
                   children: [
                     TextSpan(
                       text: questionViewModel.hint,
-                      style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w400),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ],
                 ),
